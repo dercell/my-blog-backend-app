@@ -1,5 +1,6 @@
 package ru.yandex.practicum.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,7 @@ public class PostController {
     }
 
     @PostMapping
-    public void savePost(@RequestBody Post post){
+    public void savePost(@RequestBody @Valid Post post) {
         postService.save(post);
     }
-
 }
