@@ -35,7 +35,7 @@ public class PostgresPostRepositoryImp implements PostRepository {
 
     private static final String INSERT_POST_SQL = """
             insert into my_blog.posts(title, text, tags)
-            values(:title, :text, :tags)
+            values(:title, :text, :tags) returning id
             """;
 
     public PostgresPostRepositoryImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -64,13 +64,13 @@ public class PostgresPostRepositoryImp implements PostRepository {
     }
 
     @Override
-    public void save(Post post) {
+    public Long save(Post post) {
         SqlParameterSource params = new MapSqlParameterSource()
                 .addValue("title", post.getTitle())
                 .addValue("text", post.getText())
                 .addValue("tags", post.getTags().toArray(new String[0]));
         log.info("Post: -> " + post);
-        namedParameterJdbcTemplate.update(INSERT_POST_SQL, params);
+        return namedParameterJdbcTemplate.queryForObject(INSERT_POST_SQL, params, Long.class);
     }
 
 }

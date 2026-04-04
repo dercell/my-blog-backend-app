@@ -22,8 +22,9 @@ public class PostService {
         return postRepository.findById(id);
     }
 
-    public void save(Post post){
-        postRepository.save(post);
+    public Optional<Post> save(Post post){
+        Long newPostId = postRepository.save(post);
+        return postRepository.findById(newPostId);
     }
 
 }

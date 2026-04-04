@@ -32,7 +32,10 @@ public class PostController {
     }
 
     @PostMapping
-    public void savePost(@RequestBody @Valid Post post) {
-        postService.save(post);
+    public ResponseEntity<Post> savePost(@RequestBody @Valid Post post) {
+        return postService
+                .save(post)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
