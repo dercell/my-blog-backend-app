@@ -17,5 +17,9 @@ public interface PostDao {
 
     void delete(Long id);
 
-    int incrementLike(Long id);
+    Integer incrementLike(Long id);
+
+    void updateImage(Long id, String savedFilename);
+
+    String getFilenameByPostId(Long id);
 }

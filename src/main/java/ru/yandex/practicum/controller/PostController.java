@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/posts")
-public class BlogController {
+public class PostController {
 
     private BlogService blogService;
 
@@ -50,12 +50,6 @@ public class BlogController {
     @DeleteMapping("/{id}")
     public void deletePost(@PathVariable("id") Long id) {
         blogService.deletePostById(id);
-    }
-
-
-    @PostMapping("/{id}/likes")
-    public int likePost(@PathVariable("id") Long id){
-        return blogService.likePost(id);
     }
 
 }

@@ -1,8 +1,9 @@
-<!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
-
-<web-app>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app    version="4.0"    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+            xmlns:javaee="http://xmlns.jcp.org/xml/ns/javaee"
+            xmlns:xml="http://www.w3.org/XML/1998/namespace"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
   <display-name>Archetype Created Web Application</display-name>
   <servlet>
     <servlet-name>dispatcher</servlet-name>
@@ -17,7 +18,10 @@
       <param-value>ru.yandex.practicum.config.WebConfig</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
-
+    <multipart-config>
+      <max-file-size>5242880</max-file-size>
+      <max-request-size>20971520</max-request-size>
+    </multipart-config>
   </servlet>
 
   <servlet-mapping>

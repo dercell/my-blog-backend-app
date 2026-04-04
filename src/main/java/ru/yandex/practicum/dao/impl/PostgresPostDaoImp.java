@@ -1,4 +1,4 @@
-package ru.yandex.practicum.dao;
+package ru.yandex.practicum.dao.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
@@ -54,6 +55,16 @@ public class PostgresPostDaoImp implements PostDao {
             """;
 
     private static final String DELETE_POST_SQL = "delete from my_blog.posts where id = :id";
+
+    private static final String UPDATE_POST_IMAGE_SQL = """
+            update my_blog.posts
+            set file_name = :filename
+            where id = :id
+            """;
+
+    private static final String SELECT_FILENAME_BY_POST_ID_SQL = """
+            select filename from my_blog.posts where id = :id
+            """;
 
     public PostgresPostDaoImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
@@ -107,8 +118,18 @@ public class PostgresPostDaoImp implements PostDao {
     }
 
     @Override
-    public int incrementLike(Long id) {
-        return namedParameterJdbcTemplate.queryForObject(UPDATE_INC_LIKE_SQL, Map.of("id", id), int.class);
+    public Integer incrementLike(Long id) {
+        return namedParameterJdbcTemplate.queryForObject(UPDATE_INC_LIKE_SQL, Map.of("id", id), Integer.class);
+    }
+
+    @Override
+    public void updateImage(Long id, String savedFilename) {
+        namedParameterJdbcTemplate.update(UPDATE_POST_IMAGE_SQL, Map.of("filename", savedFilename, "id", id));
+    }
+
+    @Override
+    public String getFilenameByPostId(Long id) {
+        return namedParameterJdbcTemplate.queryForObject(SELECT_FILENAME_BY_POST_ID_SQL, Map.of("id", id), String.class);
     }
 
 }
