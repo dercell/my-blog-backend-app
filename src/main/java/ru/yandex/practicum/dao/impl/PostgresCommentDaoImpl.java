@@ -42,7 +42,7 @@ public class PostgresCommentDaoImpl implements CommentDao {
             """;
 
     private static final String DELETE_COMMENT_SQL = """
-            delete from my_blog.commments where post_id = :post_id and id = :id
+            delete from my_blog.comments where post_id = :post_id and id = :id
             """;
 
     @Override
