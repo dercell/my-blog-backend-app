@@ -52,4 +52,10 @@ public class BlogController {
         blogService.deletePostById(id);
     }
 
+
+    @PostMapping("/{id}/likes")
+    public int likePost(@PathVariable("id") Long id){
+        return blogService.likePost(id);
+    }
+
 }

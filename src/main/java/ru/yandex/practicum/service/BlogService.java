@@ -35,4 +35,7 @@ public class BlogService {
     }
 
 
+    public int likePost(Long id) {
+        return postRepository.likePost(id);
+    }
 }

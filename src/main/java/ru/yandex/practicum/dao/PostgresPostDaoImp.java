@@ -46,6 +46,13 @@ public class PostgresPostDaoImp implements PostDao {
             where id = :id
             """;
 
+    private static final String UPDATE_INC_LIKE_SQL = """
+            update my_blog.posts
+            set likes_count = likes_count + 1
+            where id = :id
+            returning likes_count
+            """;
+
     private static final String DELETE_POST_SQL = "delete from my_blog.posts where id = :id";
 
     public PostgresPostDaoImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -97,6 +104,11 @@ public class PostgresPostDaoImp implements PostDao {
     @Override
     public void delete(Long id) {
         namedParameterJdbcTemplate.update(DELETE_POST_SQL, Map.of("id", id));
+    }
+
+    @Override
+    public int incrementLike(Long id) {
+        return namedParameterJdbcTemplate.queryForObject(UPDATE_INC_LIKE_SQL, Map.of("id", id), int.class);
     }
 
 }

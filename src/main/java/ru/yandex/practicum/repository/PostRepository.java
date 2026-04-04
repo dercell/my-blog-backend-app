@@ -36,4 +36,7 @@ public class PostRepository {
         postDao.delete(id);
     }
 
+    public int likePost(Long id) {
+        return postDao.incrementLike(id);
+    }
 }

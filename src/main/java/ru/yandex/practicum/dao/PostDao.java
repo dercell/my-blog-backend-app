@@ -17,4 +17,5 @@ public interface PostDao {
 
     void delete(Long id);
 
+    int incrementLike(Long id);
 }
