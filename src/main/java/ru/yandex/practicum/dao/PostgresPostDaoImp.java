@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
-public class PostgresPostRepositoryImp implements PostRepository {
+public class PostgresPostDaoImp implements PostDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String ALL_POSTS_SQL = """
@@ -46,7 +46,9 @@ public class PostgresPostRepositoryImp implements PostRepository {
             where id = :id
             """;
 
-    public PostgresPostRepositoryImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    private static final String DELETE_POST_SQL = "delete from my_blog.posts where id = :id";
+
+    public PostgresPostDaoImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
@@ -90,6 +92,11 @@ public class PostgresPostRepositoryImp implements PostRepository {
                 .addValue("id", id);
 
         namedParameterJdbcTemplate.update(UPDATE_POST_SQL, params);
+    }
+
+    @Override
+    public void delete(Long id) {
+        namedParameterJdbcTemplate.update(DELETE_POST_SQL, Map.of("id", id));
     }
 
 }

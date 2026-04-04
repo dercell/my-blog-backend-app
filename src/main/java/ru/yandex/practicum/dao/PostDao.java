@@ -5,7 +5,7 @@ import ru.yandex.practicum.model.Post;
 import java.util.List;
 import java.util.Optional;
 
-public interface PostRepository {
+public interface PostDao {
 
     List<Post> findAll();
 
@@ -14,5 +14,7 @@ public interface PostRepository {
     Long save(Post post);
 
     void update(Post post, Long id);
+
+    void delete(Long id);
 
 }
