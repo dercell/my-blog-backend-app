@@ -10,7 +10,7 @@ create table posts(
     title character varying(1000),
     text text,
     tags text[],
-    likes_count integer,
+    likes_count integer default 0,
     file_name character varying(1000)
 );
 
@@ -20,7 +20,7 @@ create table comments(
      post_id bigint references posts(id)
 );
 
-insert into posts(id, title, text, tags, likes_count)
-values (1, 'post1', 'text1', array['#tag1', '#tag2'], 0),
-        (2, 'post2', 'text2', array['#tag3', '#tag4'], 1);
+insert into posts(title, text, tags, likes_count)
+values ('post1', 'text1', array['#tag1', '#tag2'], 0),
+        ('post2', 'text2', array['#tag3', '#tag4'], 1);
 

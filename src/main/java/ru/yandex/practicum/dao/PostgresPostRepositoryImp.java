@@ -2,7 +2,9 @@ package ru.yandex.practicum.dao;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
@@ -31,6 +33,11 @@ public class PostgresPostRepositoryImp implements PostRepository {
                         where p.id = :id
                     group by p.id, p.title, p.text, p.tags""";
 
+    private static final String INSERT_POST_SQL = """
+            insert into my_blog.posts(title, text, tags)
+            values(:title, :text, :tags)
+            """;
+
     public PostgresPostRepositoryImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -54,6 +61,16 @@ public class PostgresPostRepositoryImp implements PostRepository {
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public void save(Post post) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", post.getTitle())
+                .addValue("text", post.getText())
+                .addValue("tags", post.getTags().toArray(new String[0]));
+        log.info("Post: -> " + post);
+        namedParameterJdbcTemplate.update(INSERT_POST_SQL, params);
     }
 
 }
