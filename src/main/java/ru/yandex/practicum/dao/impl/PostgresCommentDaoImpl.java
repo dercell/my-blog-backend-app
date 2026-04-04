@@ -32,7 +32,13 @@ public class PostgresCommentDaoImpl implements CommentDao {
 
     private static final String INSERT_COMMENT_SQL = """
             insert into my_blog.comments(text, post_id)
-            values(:text, :post_id) returnin id;
+            values(:text, :post_id) returning id;
+            """;
+
+    private static final String UPDATE_COMMENT_SQL = """
+            update my_blog.comments
+            set text = :text
+            where post_id = :post_id and id = :id
             """;
 
     @Override
@@ -64,5 +70,13 @@ public class PostgresCommentDaoImpl implements CommentDao {
         return namedParameterJdbcTemplate.queryForObject(INSERT_COMMENT_SQL,
                 Map.of("text", comment.getText(), "post_id", postId),
                 Long.class);
+    }
+
+    @Override
+    public void updateComment(Long postId, Comment comment) {
+        namedParameterJdbcTemplate.update(UPDATE_COMMENT_SQL,
+                Map.of("text", comment.getText(),
+                        "post_id", postId,
+                        "id", comment.getId()));
     }
 }

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.service;
 
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.dao.CommentDao;
@@ -25,5 +26,10 @@ public class CommentService {
     public Optional<Comment> saveComment(Long postId, Comment comment) {
         Long commentId = commentDao.saveComment(postId, comment);
         return commentDao.getById(postId, commentId);
+    }
+
+    public Optional<Comment> updateComment(Long postId, Comment comment) {
+        commentDao.updateComment(postId, comment);
+        return commentDao.getById(postId, comment.getId());
     }
 }

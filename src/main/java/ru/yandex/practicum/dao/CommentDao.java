@@ -12,4 +12,6 @@ public interface CommentDao {
     Optional<Comment> getById(Long postId, Long id);
 
     Long saveComment(Long postId, Comment comment);
+
+    void updateComment(Long postId, Comment comment);
 }

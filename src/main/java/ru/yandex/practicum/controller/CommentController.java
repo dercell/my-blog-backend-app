@@ -38,4 +38,14 @@ public class CommentController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
+    @PutMapping
+    public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
+                                                 @RequestBody @Valid Comment comment){
+        return commentService
+                .updateComment(postId, comment)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
+
+    }
+
 }
