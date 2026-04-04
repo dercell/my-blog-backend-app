@@ -37,7 +37,7 @@ public class PostController {
         return postService
                 .savePost(post)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElse(ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/{id}")
