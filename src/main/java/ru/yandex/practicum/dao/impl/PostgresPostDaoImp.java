@@ -1,7 +1,9 @@
 package ru.yandex.practicum.dao.impl;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 @Slf4j
 @Repository
+@AllArgsConstructor
 public class PostgresPostDaoImp implements PostDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -63,12 +66,8 @@ public class PostgresPostDaoImp implements PostDao {
             """;
 
     private static final String SELECT_FILENAME_BY_POST_ID_SQL = """
-            select filename from my_blog.posts where id = :id
+            select file_name from my_blog.posts where id = :id
             """;
-
-    public PostgresPostDaoImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
 
     @Override
     public List<Post> findAll() {
@@ -129,7 +128,12 @@ public class PostgresPostDaoImp implements PostDao {
 
     @Override
     public String getFilenameByPostId(Long id) {
-        return namedParameterJdbcTemplate.queryForObject(SELECT_FILENAME_BY_POST_ID_SQL, Map.of("id", id), String.class);
+        try{
+            return namedParameterJdbcTemplate.queryForObject(SELECT_FILENAME_BY_POST_ID_SQL, Map.of("id", id), String.class);
+        } catch (EmptyResultDataAccessException ex){
+            log.error("Empty result", ex);
+            return null;
+        }
     }
 
 }

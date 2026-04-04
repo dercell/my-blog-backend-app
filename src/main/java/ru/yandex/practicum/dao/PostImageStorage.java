@@ -11,4 +11,6 @@ public interface PostImageStorage {
 
     Resource download(String filename) throws IOException;
 
+    void delete(String filename) throws IOException;
+
 }

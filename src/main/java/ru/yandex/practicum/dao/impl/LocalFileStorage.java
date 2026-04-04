@@ -39,4 +39,10 @@ public class LocalFileStorage implements PostImageStorage {
 
     }
 
+    @Override
+    public void delete(String filename) throws IOException {
+        Path filePath = Paths.get(UPLOAD_DIR).resolve(filename).normalize();
+        Files.delete(filePath);
+    }
+
 }

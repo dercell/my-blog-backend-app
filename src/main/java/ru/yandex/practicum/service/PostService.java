@@ -1,8 +1,8 @@
-package ru.yandex.practicum.repository;
+package ru.yandex.practicum.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.dao.PostImageStorage;
@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Service
 @AllArgsConstructor
-public class PostRepository {
+public class PostService {
 
-    private PostDao postDao;
-    private PostImageStorage postImageStorage;
+    private final PostDao postDao;
+    private final PostImageStorage postImageStorage;
 
     public List<Post> getPosts() {
         return postDao.findAll();
@@ -27,18 +27,23 @@ public class PostRepository {
         return postDao.findById(id);
     }
 
-    public Optional<Post> save(Post post) {
+    public Optional<Post> savePost(Post post) {
         Long newPostId = postDao.save(post);
         return postDao.findById(newPostId);
     }
 
-    public Optional<Post> update(Post post, Long id) {
+    public Optional<Post> updatePost(Post post, Long id) {
         postDao.update(post, id);
         return postDao.findById(id);
     }
 
-    public void deleteById(Long id){
+    public void deletePostById(Long id) throws IOException {
+        String filename = postDao.getFilenameByPostId(id);
+        //commentRepository.deleteByPostId(id);
         postDao.delete(id);
+        if (filename != null){
+            postImageStorage.delete(filename);
+        }
     }
 
     public Integer likePost(Long id) {
@@ -54,4 +59,6 @@ public class PostRepository {
         String filename = postDao.getFilenameByPostId(id);
         return postImageStorage.download(filename);
     }
+
+
 }

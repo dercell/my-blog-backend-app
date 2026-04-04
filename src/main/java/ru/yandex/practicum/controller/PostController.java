@@ -6,8 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.model.Post;
-import ru.yandex.practicum.service.BlogService;
+import ru.yandex.practicum.service.PostService;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -16,16 +17,16 @@ import java.util.List;
 @RequestMapping("/api/posts")
 public class PostController {
 
-    private BlogService blogService;
+    private PostService postService;
 
     @GetMapping("/")
     public List<Post> getPosts() {
-        return blogService.getPosts();
+        return postService.getPosts();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable("id") Long id) {
-        return blogService
+        return postService
                 .getPostById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -33,7 +34,7 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Post> savePost(@RequestBody @Valid Post post) {
-        return blogService
+        return postService
                 .savePost(post)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -41,15 +42,15 @@ public class PostController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Post> updatePost(@RequestBody @Valid Post post, @PathVariable("id") Long id) {
-        return blogService
+        return postService
                 .updatePost(post, id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable("id") Long id) {
-        blogService.deletePostById(id);
+    public void deletePost(@PathVariable("id") Long id) throws IOException {
+        postService.deletePostById(id);
     }
 
 }

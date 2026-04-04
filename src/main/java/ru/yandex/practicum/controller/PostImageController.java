@@ -1,40 +1,31 @@
 package ru.yandex.practicum.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import ru.yandex.practicum.service.BlogService;
+import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
 
-@Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/posts/{id}")
-public class PostDetailController {
+@RequestMapping("/api/posts/{id}/images")
+public class PostImageController {
 
-    private BlogService blogService;
+    private PostService postService;
 
-    @PostMapping("/likes")
-    public Integer likePost(@PathVariable("id") Long id) {
-        return blogService.likePost(id);
-    }
-
-    @PutMapping("/image")
+    @PutMapping
     public void uploadFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) throws IOException {
-        blogService.uploadPostImage(id, file);
+        postService.uploadPostImage(id, file);
     }
 
-    @GetMapping("/image")
+    @GetMapping
     public ResponseEntity<Resource> downloadFile(@PathVariable("id") Long id) throws IOException {
-        Resource postImage = blogService.downloadPostImage(id);
+        Resource postImage = postService.downloadPostImage(id);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(postImage);
     }
-
-
 }
