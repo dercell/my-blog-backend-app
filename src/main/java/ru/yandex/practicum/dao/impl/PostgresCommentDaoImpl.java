@@ -41,6 +41,10 @@ public class PostgresCommentDaoImpl implements CommentDao {
             where post_id = :post_id and id = :id
             """;
 
+    private static final String DELETE_COMMENT_SQL = """
+            delete from my_blog.commments where post_id = :post_id and id = :id
+            """;
+
     @Override
     public List<Comment> findAllByPostId(Long postId) {
         return namedParameterJdbcTemplate.query(SELECT_ALL_COMMENTS_BY_POST_ID_SQL,
@@ -73,10 +77,15 @@ public class PostgresCommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public void updateComment(Long postId, Comment comment) {
+    public void updateComment(Long postId, Long id, Comment comment) {
         namedParameterJdbcTemplate.update(UPDATE_COMMENT_SQL,
                 Map.of("text", comment.getText(),
                         "post_id", postId,
-                        "id", comment.getId()));
+                        "id", id));
+    }
+
+    @Override
+    public void deleteComment(Long postId, Long id) {
+        namedParameterJdbcTemplate.update(DELETE_COMMENT_SQL, Map.of("post_id", postId, "id", id));
     }
 }

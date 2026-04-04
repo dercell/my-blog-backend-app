@@ -28,8 +28,12 @@ public class CommentService {
         return commentDao.getById(postId, commentId);
     }
 
-    public Optional<Comment> updateComment(Long postId, Comment comment) {
-        commentDao.updateComment(postId, comment);
-        return commentDao.getById(postId, comment.getId());
+    public Optional<Comment> updateComment(Long postId, Long id, Comment comment) {
+        commentDao.updateComment(postId, id, comment);
+        return commentDao.getById(postId, id);
+    }
+
+    public void deleteComment(Long postId, Long id) {
+        commentDao.deleteComment(postId, id);
     }
 }

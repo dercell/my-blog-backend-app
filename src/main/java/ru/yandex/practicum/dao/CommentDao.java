@@ -13,5 +13,7 @@ public interface CommentDao {
 
     Long saveComment(Long postId, Comment comment);
 
-    void updateComment(Long postId, Comment comment);
+    void updateComment(Long postId, Long id, Comment comment);
+
+    void deleteComment(Long postId, Long id);
 }
