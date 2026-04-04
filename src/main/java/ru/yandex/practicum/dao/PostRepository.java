@@ -13,4 +13,6 @@ public interface PostRepository {
 
     Long save(Post post);
 
+    void update(Post post, Long id);
+
 }

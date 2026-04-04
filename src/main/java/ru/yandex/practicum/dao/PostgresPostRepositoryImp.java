@@ -38,6 +38,14 @@ public class PostgresPostRepositoryImp implements PostRepository {
             values(:title, :text, :tags) returning id
             """;
 
+    private static final String UPDATE_POST_SQL = """
+            update my_blog.posts
+            set title = :title,
+                text = :text,
+                tags = :tags
+            where id = :id
+            """;
+
     public PostgresPostRepositoryImp(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
@@ -69,8 +77,19 @@ public class PostgresPostRepositoryImp implements PostRepository {
                 .addValue("title", post.getTitle())
                 .addValue("text", post.getText())
                 .addValue("tags", post.getTags().toArray(new String[0]));
-        log.info("Post: -> " + post);
+
         return namedParameterJdbcTemplate.queryForObject(INSERT_POST_SQL, params, Long.class);
+    }
+
+    @Override
+    public void update(Post post, Long id) {
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", post.getTitle())
+                .addValue("text", post.getText())
+                .addValue("tags", post.getTags().toArray(new String[0]))
+                .addValue("id", id);
+
+        namedParameterJdbcTemplate.update(UPDATE_POST_SQL, params);
     }
 
 }

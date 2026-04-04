@@ -38,4 +38,12 @@ public class PostController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@RequestBody @Valid Post post, @PathVariable("id") Long id) {
+        return postService
+                .update(post, id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

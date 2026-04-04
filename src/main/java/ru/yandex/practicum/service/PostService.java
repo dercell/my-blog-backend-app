@@ -14,17 +14,22 @@ public class PostService {
 
     private PostRepository postRepository;
 
-    public List<Post> getPosts(){
+    public List<Post> getPosts() {
         return postRepository.findAll();
     }
 
-    public Optional<Post> getPostById(Long id){
+    public Optional<Post> getPostById(Long id) {
         return postRepository.findById(id);
     }
 
-    public Optional<Post> save(Post post){
+    public Optional<Post> save(Post post) {
         Long newPostId = postRepository.save(post);
         return postRepository.findById(newPostId);
+    }
+
+    public Optional<Post> update(Post post, Long id) {
+        postRepository.update(post, id);
+        return postRepository.findById(id);
     }
 
 }
