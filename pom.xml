@@ -94,8 +94,15 @@
             <version>1.5.13</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>11.0.15</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
     <build>
-        <finalName>my-blog-backend-app</finalName>
+        <finalName>ROOT</finalName>
     </build>
 </project>

@@ -1,13 +1,13 @@
 package ru.yandex.practicum.dao;
 
+import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface PostDao {
 
-    List<Post> findAll();
+    PagePostResponse findAll(String search, int pageNumber, int pageSize);
 
     Optional<Post> findById(Long id);
 

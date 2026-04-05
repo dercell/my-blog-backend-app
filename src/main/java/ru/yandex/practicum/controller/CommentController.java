@@ -10,7 +10,7 @@ import ru.yandex.practicum.service.CommentService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts/{postId}/comments")
+@RequestMapping({"/api/posts/{postId}/comments", "/api/posts/undefined/comments"})
 @AllArgsConstructor
 public class CommentController {
 
@@ -38,7 +38,7 @@ public class CommentController {
                 .orElse(ResponseEntity.badRequest().build());
     }
 
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
                                                  @PathVariable("id") Long id,
                                                  @RequestBody @Valid Comment comment) {
@@ -49,8 +49,8 @@ public class CommentController {
 
     }
 
-    @DeleteMapping
-    private void deleteComment(@PathVariable("postId") Long postId,
+    @DeleteMapping("/{id}")
+    public void deleteComment(@PathVariable("postId") Long postId,
                                @PathVariable("id") Long id){
         commentService.deleteComment(postId, id);
     }

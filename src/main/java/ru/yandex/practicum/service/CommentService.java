@@ -36,4 +36,8 @@ public class CommentService {
     public void deleteComment(Long postId, Long id) {
         commentDao.deleteComment(postId, id);
     }
+
+    public void deleteAllPostComments(Long postId){
+        commentDao.deleteAllPostComments(postId);
+    }
 }

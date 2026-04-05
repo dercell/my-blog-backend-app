@@ -5,11 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -19,9 +19,12 @@ public class PostController {
 
     private PostService postService;
 
-    @GetMapping("/")
-    public List<Post> getPosts() {
-        return postService.getPosts();
+    @GetMapping
+    public PagePostResponse getPosts(@RequestParam("search") String search,
+                                     @RequestParam("pageNumber") int pageNum,
+                                     @RequestParam("pageSize") int pageSize) {
+
+        return postService.getPosts(search, pageNum, pageSize);
     }
 
     @GetMapping("/{id}")

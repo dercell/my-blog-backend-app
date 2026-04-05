@@ -9,9 +9,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dao.PostDao;
+import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,11 +25,16 @@ import java.util.Optional;
 public class PostgresPostDaoImp implements PostDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    private static final String COUNT_ALL_SQL = "select count(1) from my_blog.posts";
+
     private static final String ALL_POSTS_SQL = """
             select p.id, p.title, p.text, p.tags, p.likes_count, count(c.id) as comments_count
             from my_blog.posts p
                 left join my_blog.comments c on p.id = c.post_id
-            group by p.id, p.title, p.text, p.tags""";
+            group by p.id, p.title, p.text, p.tags
+            order by p.id desc
+            limit :limit offset :offset
+            """;
 
     private static final String GET_POST_BY_ID_SQL =
             """
@@ -35,7 +42,8 @@ public class PostgresPostDaoImp implements PostDao {
                     from my_blog.posts p
                         left join my_blog.comments c on p.id = c.post_id
                         where p.id = :id
-                    group by p.id, p.title, p.text, p.tags""";
+                    group by p.id, p.title, p.text, p.tags
+                    """;
 
     private static final String INSERT_POST_SQL = """
             insert into my_blog.posts(title, text, tags)
@@ -70,8 +78,22 @@ public class PostgresPostDaoImp implements PostDao {
             """;
 
     @Override
-    public List<Post> findAll() {
-        return namedParameterJdbcTemplate.query(ALL_POSTS_SQL, PostMapper.postRowMapper());
+    public PagePostResponse findAll(String search, int pageNumber, int pageSize) {
+        long total = Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(COUNT_ALL_SQL, Map.of(), Long.class))
+                .orElse(0L);
+        int currentPage = pageNumber - 1;
+        int offset = currentPage * pageSize;
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        boolean hasPrev = currentPage > 0;
+        boolean hasNext = currentPage < totalPages - 1;
+
+        List<Post> content = total != 0 ? namedParameterJdbcTemplate.query(ALL_POSTS_SQL,
+                Map.of("limit", pageSize, "offset", offset),
+                PostMapper.postRowMapper()) : Collections.emptyList();
+
+
+        return new PagePostResponse(content, hasPrev, hasNext, totalPages - 1);
+
     }
 
     @Override
@@ -128,9 +150,9 @@ public class PostgresPostDaoImp implements PostDao {
 
     @Override
     public String getFilenameByPostId(Long id) {
-        try{
+        try {
             return namedParameterJdbcTemplate.queryForObject(SELECT_FILENAME_BY_POST_ID_SQL, Map.of("id", id), String.class);
-        } catch (EmptyResultDataAccessException ex){
+        } catch (EmptyResultDataAccessException ex) {
             log.error("Empty result", ex);
             return null;
         }

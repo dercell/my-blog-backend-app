@@ -6,10 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.dao.PostImageStorage;
+import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -18,9 +19,10 @@ public class PostService {
 
     private final PostDao postDao;
     private final PostImageStorage postImageStorage;
+    private final CommentService commentService;
 
-    public List<Post> getPosts() {
-        return postDao.findAll();
+    public PagePostResponse getPosts(String search, int pageNumber, int pageSize) {
+        return postDao.findAll(search, pageNumber, pageSize);
     }
 
     public Optional<Post> getPostById(Long id) {
@@ -39,7 +41,7 @@ public class PostService {
 
     public void deletePostById(Long id) throws IOException {
         String filename = postDao.getFilenameByPostId(id);
-        //commentRepository.deleteByPostId(id);
+        commentService.deleteAllPostComments(id);
         postDao.delete(id);
         if (filename != null){
             postImageStorage.delete(filename);
