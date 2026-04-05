@@ -12,13 +12,13 @@ import java.io.IOException;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/posts/{id}/images")
+@RequestMapping("/api/posts/{id}/image")
 public class PostImageController {
 
     private PostService postService;
 
     @PutMapping
-    public void uploadFile(@PathVariable("id") Long id, @RequestParam("file") MultipartFile file) throws IOException {
+    public void uploadFile(@PathVariable("id") Long id, @RequestParam("image") MultipartFile file) throws IOException {
         postService.uploadPostImage(id, file);
     }
 

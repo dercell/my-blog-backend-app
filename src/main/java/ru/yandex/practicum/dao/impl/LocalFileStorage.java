@@ -1,5 +1,6 @@
 package ru.yandex.practicum.dao.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
@@ -12,10 +13,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+@Slf4j
 @Repository
 public class LocalFileStorage implements PostImageStorage {
 
-    private final String UPLOAD_DIR = System.getenv("catalina.home") + "/uploads/images/";
+    private final String UPLOAD_DIR = System.getenv("CATALINA_HOME") + "/uploads/images/";
 
     public String upload(MultipartFile file) throws IOException {
         Path path = Paths.get(UPLOAD_DIR);

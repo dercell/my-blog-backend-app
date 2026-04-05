@@ -17,12 +17,12 @@ public class CommentController {
     private final CommentService commentService;
 
     @GetMapping
-    public List<Comment> findAllByPostId(@PathVariable("postId") Long postId) {
+    public List<Comment> findAllByPostId(@PathVariable(value = "postId", required = false) Long postId) {
         return commentService.findAllByPostId(postId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getById(@PathVariable("postId") Long postId, @PathVariable("id") Long id) {
+    public ResponseEntity<Comment> getById(@PathVariable(value = "postId", required = false) Long postId, @PathVariable("id") Long id) {
         return commentService
                 .getById(postId, id)
                 .map(ResponseEntity::ok)
@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> saveComment(@PathVariable("postId") Long postId,
+    public ResponseEntity<Comment> saveComment(@PathVariable(value = "postId", required = false) Long postId,
                                                @RequestBody @Valid Comment comment) {
         return commentService
                 .saveComment(postId, comment)
@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
+    public ResponseEntity<Comment> updateComment(@PathVariable(value = "postId", required = false) Long postId,
                                                  @PathVariable("id") Long id,
                                                  @RequestBody @Valid Comment comment) {
         return commentService
@@ -50,7 +50,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable("postId") Long postId,
+    public void deleteComment(@PathVariable(value = "postId", required = false) Long postId,
                                @PathVariable("id") Long id){
         commentService.deleteComment(postId, id);
     }
