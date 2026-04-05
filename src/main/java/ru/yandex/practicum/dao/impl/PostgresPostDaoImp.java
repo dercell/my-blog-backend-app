@@ -13,10 +13,7 @@ import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Slf4j
@@ -25,12 +22,16 @@ import java.util.Optional;
 public class PostgresPostDaoImp implements PostDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    private static final String COUNT_ALL_SQL = "select count(1) from my_blog.posts";
+    private static final String COUNT_ALL_SQL = """
+            select count(1) from my_blog.posts
+            where title ilike :search and tags @> array [:tags]::text[]
+            """;
 
     private static final String ALL_POSTS_SQL = """
             select p.id, p.title, p.text, p.tags, p.likes_count, count(c.id) as comments_count
             from my_blog.posts p
                 left join my_blog.comments c on p.id = c.post_id
+            where p.title ilike :search and p.tags @> array [:tags]::text[]
             group by p.id, p.title, p.text, p.tags
             order by p.id desc
             limit :limit offset :offset
@@ -77,9 +78,16 @@ public class PostgresPostDaoImp implements PostDao {
             select file_name from my_blog.posts where id = :id
             """;
 
+    private record SearchParts(String titleFilter, List<String> tagsFilter) { }
+
     @Override
     public PagePostResponse findAll(String search, int pageNumber, int pageSize) {
-        long total = Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(COUNT_ALL_SQL, Map.of(), Long.class))
+
+        SearchParts sp = parseSearch(search);
+
+        long total = Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(COUNT_ALL_SQL,
+                        Map.of("search", "%" + sp.titleFilter + "%", "tags", sp.tagsFilter.toArray(new String[0])),
+                        Long.class))
                 .orElse(0L);
         int currentPage = pageNumber - 1;
         int offset = currentPage * pageSize;
@@ -88,7 +96,8 @@ public class PostgresPostDaoImp implements PostDao {
         boolean hasNext = currentPage < totalPages - 1;
 
         List<Post> content = total != 0 ? namedParameterJdbcTemplate.query(ALL_POSTS_SQL,
-                Map.of("limit", pageSize, "offset", offset),
+                Map.of("search", "%" + sp.titleFilter + "%", "tags", sp.tagsFilter.toArray(new String[0]),
+                        "limit", pageSize, "offset", offset),
                 PostMapper.postRowMapper()) : Collections.emptyList();
 
 
@@ -156,6 +165,23 @@ public class PostgresPostDaoImp implements PostDao {
             log.error("Empty result", ex);
             return null;
         }
+    }
+
+    private static SearchParts parseSearch(String search) {
+        List<String> tagsFilter = new ArrayList<>();
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String word : search.trim().split("\\s+")) {
+            if (word.startsWith("#") && word.length() > 1) {
+                tagsFilter.add(word.substring(1));
+            } else if (!word.startsWith("#") && !word.isEmpty()) {
+                sb.append(word).append(" ");
+            }
+        }
+
+        return new SearchParts(sb.toString().trim(), tagsFilter);
+
     }
 
 }
