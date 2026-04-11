@@ -10,6 +10,7 @@ import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @Slf4j
 @RestController
@@ -36,7 +37,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> savePost(@RequestBody @Valid Post post) {
+    public ResponseEntity<Post> savePost(@RequestBody @Valid Post post) throws SQLException {
         return postService
                 .savePost(post)
                 .map(ResponseEntity::ok)

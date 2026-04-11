@@ -7,12 +7,18 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -24,14 +30,14 @@ public class PostgresPostDaoImp implements PostDao {
 
     private static final String COUNT_ALL_SQL = """
             select count(1) from my_blog.posts
-            where title ilike :search and tags @> array [:tags]::text[]
+            where title ilike :search
             """;
 
     private static final String ALL_POSTS_SQL = """
             select p.id, p.title, p.text, p.tags, p.likes_count, count(c.id) as comments_count
             from my_blog.posts p
                 left join my_blog.comments c on p.id = c.post_id
-            where p.title ilike :search and p.tags @> array [:tags]::text[]
+            where p.title ilike :search {0}
             group by p.id, p.title, p.text, p.tags
             order by p.id desc
             limit :limit offset :offset
@@ -48,7 +54,7 @@ public class PostgresPostDaoImp implements PostDao {
 
     private static final String INSERT_POST_SQL = """
             insert into my_blog.posts(title, text, tags)
-            values(:title, :text, :tags) returning id
+            values(:title, :text, :tags)
             """;
 
     private static final String UPDATE_POST_SQL = """
@@ -63,7 +69,6 @@ public class PostgresPostDaoImp implements PostDao {
             update my_blog.posts
             set likes_count = likes_count + 1
             where id = :id
-            returning likes_count
             """;
 
     private static final String DELETE_POST_SQL = "delete from my_blog.posts where id = :id";
@@ -78,26 +83,46 @@ public class PostgresPostDaoImp implements PostDao {
             select file_name from my_blog.posts where id = :id
             """;
 
-    private record SearchParts(String titleFilter, List<String> tagsFilter) { }
+    private record SearchParts(String titleFilter, List<String> tagsFilter) {
+    }
 
     @Override
     public PagePostResponse findAll(String search, int pageNumber, int pageSize) {
 
+        String countSql = COUNT_ALL_SQL;
+        String tagsClause = "";
         SearchParts sp = parseSearch(search);
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("search", "%" + sp.titleFilter + "%");
 
-        long total = Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(COUNT_ALL_SQL,
-                        Map.of("search", "%" + sp.titleFilter + "%", "tags", sp.tagsFilter.toArray(new String[0])),
-                        Long.class))
+        if (!sp.tagsFilter.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < sp.tagsFilter().size(); i++) {
+                sb.append("array_contains(tags, :tag").append(i).append(")").append(" or ");
+                params.addValue("tag" + i, sp.tagsFilter().get(i));
+            }
+            tagsClause = " and (" + sb.substring(0, sb.length() - 4) + ")";
+            countSql += tagsClause;
+        }
+        String pageSql = MessageFormat.format(ALL_POSTS_SQL, tagsClause);
+
+        Long t = namedParameterJdbcTemplate.queryForObject(countSql,
+                params,
+                Long.class);
+        long total = Optional.ofNullable(t)
                 .orElse(0L);
+
         int currentPage = pageNumber - 1;
         int offset = currentPage * pageSize;
         int totalPages = (int) Math.ceil((double) total / pageSize);
         boolean hasPrev = currentPage > 0;
         boolean hasNext = currentPage < totalPages - 1;
 
-        List<Post> content = total != 0 ? namedParameterJdbcTemplate.query(ALL_POSTS_SQL,
-                Map.of("search", "%" + sp.titleFilter + "%", "tags", sp.tagsFilter.toArray(new String[0]),
-                        "limit", pageSize, "offset", offset),
+        params.addValue("limit", pageSize);
+        params.addValue("offset", offset);
+        List<Post> content = total != 0 ? namedParameterJdbcTemplate.query(pageSql,
+                params,
                 PostMapper.postRowMapper()) : Collections.emptyList();
 
 
@@ -122,13 +147,17 @@ public class PostgresPostDaoImp implements PostDao {
     }
 
     @Override
-    public Long save(Post post) {
-        SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("title", post.getTitle())
-                .addValue("text", post.getText())
-                .addValue("tags", post.getTags().toArray(new String[0]));
-
-        return namedParameterJdbcTemplate.queryForObject(INSERT_POST_SQL, params, Long.class);
+    public Long save(Post post) throws SQLException {
+        try (Connection conn = Objects.requireNonNull(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource()).getConnection()) {
+            Array tags = conn.createArrayOf("VARCHAR", post.getTags().toArray(new String[0]));
+            SqlParameterSource params = new MapSqlParameterSource()
+                    .addValue("title", post.getTitle())
+                    .addValue("text", post.getText())
+                    .addValue("tags", tags);
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            namedParameterJdbcTemplate.update(INSERT_POST_SQL, params, keyHolder);
+            return Objects.requireNonNull(keyHolder.getKey()).longValue();
+        }
     }
 
     @Override
@@ -149,7 +178,7 @@ public class PostgresPostDaoImp implements PostDao {
 
     @Override
     public Integer incrementLike(Long id) {
-        return namedParameterJdbcTemplate.queryForObject(UPDATE_INC_LIKE_SQL, Map.of("id", id), Integer.class);
+        return namedParameterJdbcTemplate.update(UPDATE_INC_LIKE_SQL, Map.of("id", id));
     }
 
     @Override

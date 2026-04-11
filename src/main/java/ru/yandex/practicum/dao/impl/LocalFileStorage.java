@@ -17,12 +17,13 @@ import java.util.Objects;
 @Repository
 public class LocalFileStorage implements PostImageStorage {
 
-    private final String UPLOAD_DIR = System.getenv("CATALINA_HOME") + "/uploads/images/";
+    private final String UPLOAD_DIR = Objects.requireNonNullElse(System.getenv("CATALINA_HOME"), ".")
+            + "/uploads/images/";
 
     public String upload(MultipartFile file) throws IOException {
         Path path = Paths.get(UPLOAD_DIR);
 
-        if(!Files.exists(path)){
+        if (!Files.exists(path)) {
             Files.createDirectories(path);
         }
 

@@ -11,6 +11,7 @@ import ru.yandex.practicum.model.Post;
 
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Optional;
 
 @Service
@@ -29,7 +30,7 @@ public class PostService {
         return postDao.findById(id);
     }
 
-    public Optional<Post> savePost(Post post) {
+    public Optional<Post> savePost(Post post) throws SQLException {
         Long newPostId = postDao.save(post);
         return postDao.findById(newPostId);
     }
@@ -49,7 +50,8 @@ public class PostService {
     }
 
     public Integer likePost(Long id) {
-        return postDao.incrementLike(id);
+        postDao.incrementLike(id);
+        return postDao.findById(id).map(Post::getLikesCount).orElse(null);
     }
 
     public void uploadPostImage(Long id, MultipartFile file) throws IOException {

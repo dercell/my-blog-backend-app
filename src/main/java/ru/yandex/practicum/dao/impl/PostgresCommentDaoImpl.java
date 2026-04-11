@@ -3,7 +3,11 @@ package ru.yandex.practicum.dao.impl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dao.CommentDao;
 import ru.yandex.practicum.model.Comment;
@@ -12,6 +16,7 @@ import ru.yandex.practicum.util.mapper.CommentMapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -32,8 +37,7 @@ public class PostgresCommentDaoImpl implements CommentDao {
             """;
 
     private static final String INSERT_COMMENT_SQL = """
-            insert into my_blog.comments(text, post_id)
-            values(:text, :post_id) returning id;
+            insert into my_blog.comments(text, post_id) values(:text, :post_id)
             """;
 
     private static final String UPDATE_COMMENT_SQL = """
@@ -75,10 +79,15 @@ public class PostgresCommentDaoImpl implements CommentDao {
 
     @Override
     public Long saveComment(Long postId, Comment comment) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("text", comment.getText())
+                .addValue(POST_ID, postId);
 
-        return namedParameterJdbcTemplate.queryForObject(INSERT_COMMENT_SQL,
-                Map.of("text", comment.getText(), POST_ID, postId),
-                Long.class);
+        namedParameterJdbcTemplate.update(INSERT_COMMENT_SQL, params, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+
     }
 
     @Override

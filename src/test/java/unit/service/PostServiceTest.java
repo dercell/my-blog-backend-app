@@ -17,6 +17,7 @@ import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,7 +67,7 @@ class PostServiceTest {
     }
 
     @Test
-    void savePost() {
+    void savePost() throws SQLException {
         Post p = Post.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(10).commentsCount(5).build();
         when(postDao.save(p)).thenReturn(p.getId());
         when(postDao.findById(p.getId())).thenReturn(Optional.of(p));

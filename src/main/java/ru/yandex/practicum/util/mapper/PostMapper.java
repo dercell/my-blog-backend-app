@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.model.Post;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -17,7 +18,7 @@ public class PostMapper {
                 .id(rs.getLong("id"))
                 .title(rs.getString("title"))
                 .text(rs.getString("text"))
-                .tags(Arrays.asList((String[]) rs.getArray("tags").getArray()))
+                .tags(Arrays.stream((Object[]) rs.getArray("tags").getArray()).filter(Objects::nonNull).map(String::valueOf).toList())
                 .likesCount(rs.getInt("likes_count"))
                 .commentsCount(rs.getInt("comments_count"))
                 .build();

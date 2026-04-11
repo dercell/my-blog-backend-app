@@ -3,6 +3,7 @@ package ru.yandex.practicum.dao;
 import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 public interface PostDao {
@@ -11,7 +12,7 @@ public interface PostDao {
 
     Optional<Post> findById(Long id);
 
-    Long save(Post post);
+    Long save(Post post) throws SQLException;
 
     void update(Post post, Long id);
 
