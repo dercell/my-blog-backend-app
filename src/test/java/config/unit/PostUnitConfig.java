@@ -1,4 +1,4 @@
-package config;
+package config.unit;
 
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

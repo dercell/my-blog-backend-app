@@ -1,6 +1,6 @@
 package integration.dao;
 
-import config.PostIntegrationConfig;
+import config.integration.PostIntegrationConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

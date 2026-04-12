@@ -1,6 +1,6 @@
 package unit.service;
 
-import config.PostUnitConfig;
+import config.unit.PostUnitConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +98,8 @@ class PostServiceTest {
 
     @Test
     void likePost() {
-        when(postDao.incrementLike(2L)).thenReturn(1);
+        Post p = Post.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(1).commentsCount(5).build();
+        when(postDao.findById(2L)).thenReturn(Optional.of(p));
 
         Integer result = postService.likePost(2L);
         assertEquals(1, result);

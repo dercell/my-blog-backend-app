@@ -1,6 +1,6 @@
 package unit.service;
 
-import config.CommentUnitConfig;
+import config.unit.CommentUnitConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
