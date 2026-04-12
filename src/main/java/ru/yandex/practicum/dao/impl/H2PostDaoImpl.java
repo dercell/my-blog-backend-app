@@ -15,9 +15,7 @@ import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.Post;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -25,7 +23,7 @@ import java.util.*;
 @Slf4j
 @Repository
 @AllArgsConstructor
-public class PostgresPostDaoImp implements PostDao {
+public class H2PostDaoImpl implements PostDao {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private static final String COUNT_ALL_SQL = """
@@ -54,7 +52,7 @@ public class PostgresPostDaoImp implements PostDao {
 
     private static final String INSERT_POST_SQL = """
             insert into my_blog.posts(title, text, tags)
-            values(:title, :text, :tags)
+            values(:title, :text, :tags) 
             """;
 
     private static final String UPDATE_POST_SQL = """
@@ -99,7 +97,7 @@ public class PostgresPostDaoImp implements PostDao {
             StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < sp.tagsFilter().size(); i++) {
-                sb.append("array_contains(tags, :tag").append(i).append(")").append(" or ");
+                sb.append("array_contains(tags, :tag").append(i).append(")").append(" and ");
                 params.addValue("tag" + i, sp.tagsFilter().get(i));
             }
             tagsClause = " and (" + sb.substring(0, sb.length() - 4) + ")";
@@ -107,10 +105,9 @@ public class PostgresPostDaoImp implements PostDao {
         }
         String pageSql = MessageFormat.format(ALL_POSTS_SQL, tagsClause);
 
-        Long t = namedParameterJdbcTemplate.queryForObject(countSql,
-                params,
-                Long.class);
-        long total = Optional.ofNullable(t)
+        long total = Optional.ofNullable(namedParameterJdbcTemplate.queryForObject(countSql,
+                        params,
+                        Long.class))
                 .orElse(0L);
 
         int currentPage = pageNumber - 1;
@@ -147,17 +144,18 @@ public class PostgresPostDaoImp implements PostDao {
     }
 
     @Override
-    public Long save(Post post) throws SQLException {
-        try (Connection conn = Objects.requireNonNull(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource()).getConnection()) {
-            Array tags = conn.createArrayOf("VARCHAR", post.getTags().toArray(new String[0]));
-            SqlParameterSource params = new MapSqlParameterSource()
-                    .addValue("title", post.getTitle())
-                    .addValue("text", post.getText())
-                    .addValue("tags", tags);
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-            namedParameterJdbcTemplate.update(INSERT_POST_SQL, params, keyHolder);
-            return Objects.requireNonNull(keyHolder.getKey()).longValue();
-        }
+    public Long save(Post post) {
+
+        SqlParameterSource params = new MapSqlParameterSource()
+                .addValue("title", post.getTitle())
+                .addValue("text", post.getText())
+                .addValue("tags", post.getTags().toArray(new String[0]));
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        namedParameterJdbcTemplate.update(INSERT_POST_SQL, params, keyHolder);
+
+        return Objects.requireNonNull(keyHolder.getKey()).longValue();
+
+
     }
 
     @Override

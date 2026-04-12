@@ -75,7 +75,7 @@ class PostIntegrationTest {
     void savePost() throws SQLException {
         Post newPost = Post.builder()
                 .id(3L).title("Третий пост").text("Текст третьего")
-                .tags(List.of("tag5")).likesCount(0).commentsCount(0).build();
+                .tags(List.of("tag5", "tag6")).likesCount(0).commentsCount(0).build();
         Optional<Post> savedPost = postService.savePost(newPost);
 
         assertEquals(newPost.getTitle(), savedPost.map(Post::getTitle).orElse(null));

@@ -44,7 +44,7 @@ public class PostService {
         String filename = postDao.getFilenameByPostId(id);
         commentService.deleteAllPostComments(id);
         postDao.delete(id);
-        if (filename != null){
+        if (filename != null) {
             postImageStorage.delete(filename);
         }
     }

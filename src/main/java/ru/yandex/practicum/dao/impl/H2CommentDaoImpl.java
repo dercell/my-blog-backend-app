@@ -22,7 +22,7 @@ import java.util.Optional;
 @Slf4j
 @Repository
 @AllArgsConstructor
-public class PostgresCommentDaoImpl implements CommentDao {
+public class H2CommentDaoImpl implements CommentDao {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 

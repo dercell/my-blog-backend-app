@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import ru.yandex.practicum.dao.CommentDao;
-import ru.yandex.practicum.dao.impl.PostgresCommentDaoImpl;
+import ru.yandex.practicum.dao.impl.H2CommentDaoImpl;
 import ru.yandex.practicum.service.CommentService;
 
 @Configuration
@@ -18,7 +18,7 @@ public class CommentIntegrationConfig {
 
     @Bean
     public CommentDao commentDao() {
-        return new PostgresCommentDaoImpl(namedParameterJdbcTemplate);
+        return new H2CommentDaoImpl(namedParameterJdbcTemplate);
     }
 
     @Bean

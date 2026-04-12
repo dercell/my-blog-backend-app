@@ -69,11 +69,11 @@
             <version>1.18.44</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>42.7.10</version>
-            <scope>compile</scope>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.4.240</version>
         </dependency>
 
         <dependency>
@@ -131,14 +131,6 @@
             <version>2.9.0</version>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.4.240</version>
-            <scope>test</scope>
-        </dependency>
-
 
     </dependencies>
     <build>
