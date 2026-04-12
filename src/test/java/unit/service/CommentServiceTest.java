@@ -1,6 +1,7 @@
 package unit.service;
 
 import config.unit.CommentUnitConfig;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = CommentUnitConfig.class)
+@Tag("unit")
 class CommentServiceTest {
 
     @Autowired

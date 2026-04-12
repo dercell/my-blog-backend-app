@@ -3,6 +3,7 @@ package integration.dao;
 import config.integration.PostIntegrationConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = PostIntegrationConfig.class)
+@Tag("integration")
+@Tag("dao")
 class PostIntegrationTest {
 
     @Autowired

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import config.integration.CommentControllerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = CommentControllerConfig.class)
+@Tag("integration")
+@Tag("rest")
 class CommentControllerTest {
 
     @Autowired

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import config.integration.PostControllerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = PostControllerConfig.class)
+@Tag("integration")
+@Tag("rest")
 class PostControllerTest {
 
     @Autowired
