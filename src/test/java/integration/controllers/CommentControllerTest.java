@@ -2,7 +2,7 @@ package integration.controllers;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.integration.CommentControllerConfig;
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.controller.CommentController;
@@ -21,10 +22,11 @@ import ru.yandex.practicum.model.Comment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = CommentControllerConfig.class)
-@Tag("integration")
 @Tag("rest")
+@Tag("integration")
+@WebAppConfiguration
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 class CommentControllerTest {
 
     @Autowired
@@ -39,6 +41,7 @@ class CommentControllerTest {
 
     @BeforeEach
     void setUp() {
+
         mockMvc = MockMvcBuilders.standaloneSetup(commentController).build();
         namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/data.sql'");
     }
@@ -50,7 +53,8 @@ class CommentControllerTest {
 
     @Test
     void findAllByPostId() throws Exception {
-        mockMvc.perform(get("/api/posts/{postId}/comments", 1L))
+        mockMvc.perform(get("/api/posts/{postId}/comments", 1L)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())

@@ -12,12 +12,10 @@ import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.PostCreateRequest;
 import ru.yandex.practicum.model.PostResponse;
 import ru.yandex.practicum.model.PostUpdateRequest;
-import ru.yandex.practicum.util.exceptions.DataOperationException;
 import ru.yandex.practicum.util.exceptions.StorageException;
 
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @Slf4j

@@ -1,6 +1,6 @@
 package integration.controllers;
 
-import config.integration.PostLikesControllerConfig;
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -20,18 +20,18 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Tag("rest")
+@Tag("integration")
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PostLikesControllerConfig.class)
-@Tag("integration")
-@Tag("rest")
-class PostResponseLikesControllerTest {
+@ContextConfiguration(classes = TestConfig.class)
+class PostLikesControllerTest {
 
+    private MockMvc mockMvc;
 
     @Autowired
     private PostLikesController postLikesController;
 
-    private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;

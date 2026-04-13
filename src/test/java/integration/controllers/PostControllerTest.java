@@ -1,7 +1,7 @@
 package integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.integration.PostControllerConfig;
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -16,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.controller.PostController;
+import ru.yandex.practicum.model.PostCreateRequest;
 import ru.yandex.practicum.model.PostResponse;
 
 import java.util.List;
@@ -23,17 +24,17 @@ import java.util.List;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Tag("rest")
+@Tag("integration")
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PostControllerConfig.class)
-@Tag("integration")
-@Tag("rest")
-class PostResponseControllerTest {
+@ContextConfiguration(classes = TestConfig.class)
+class PostControllerTest {
+
+    private MockMvc mockMvc;
 
     @Autowired
     private PostController postController;
-
-    private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -74,14 +75,14 @@ class PostResponseControllerTest {
 
     @Test
     void savePost() throws Exception {
-        PostResponse newPostResponse = PostResponse.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
+        PostCreateRequest newPost = PostCreateRequest.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
         mockMvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(newPostResponse)))
+                        .content(om.writeValueAsString(newPost)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.title").value(newPostResponse.getTitle()));
+                .andExpect(jsonPath("$.title").value(newPost.getTitle()));
     }
 
 

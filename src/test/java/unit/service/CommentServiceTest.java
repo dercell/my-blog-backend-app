@@ -1,12 +1,11 @@
 package unit.service;
 
-import config.unit.CommentUnitConfig;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.yandex.practicum.dao.CommentDao;
 import ru.yandex.practicum.model.Comment;
 import ru.yandex.practicum.service.CommentService;
@@ -17,15 +16,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = CommentUnitConfig.class)
 @Tag("unit")
+@ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
 
-    @Autowired
+    @InjectMocks
     private CommentService commentService;
 
-    @Autowired
+    @Mock
     private CommentDao commentDao;
 
     @Test

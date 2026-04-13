@@ -1,15 +1,14 @@
 package unit.service;
 
-import config.unit.PostUnitConfig;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.dao.PostImageStorage;
@@ -17,6 +16,7 @@ import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.PostCreateRequest;
 import ru.yandex.practicum.model.PostResponse;
 import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.service.CommentService;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
@@ -27,18 +27,20 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PostUnitConfig.class)
 @Tag("unit")
+@ExtendWith(MockitoExtension.class)
 class PostServiceTest {
 
-    @Autowired
+    @InjectMocks
     private PostService postService;
 
-    @Autowired
+    @Mock
     private PostDao postDao;
 
-    @Autowired
+    @Mock
+    private CommentService commentService;
+
+    @Mock
     private PostImageStorage postImageStorage;
 
     @Test
@@ -103,6 +105,7 @@ class PostServiceTest {
     @Test
     void deletePostById() throws IOException {
         when(postDao.getFilenameByPostId(3L)).thenReturn("image.png");
+
         postService.deletePostById(3L);
 
         verify(postDao, times(1)).delete(3L);

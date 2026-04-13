@@ -1,6 +1,6 @@
 package integration.controllers;
 
-import config.integration.PostImageControllerConfig;
+import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -24,17 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Tag("rest")
+@Tag("integration")
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PostImageControllerConfig.class)
-@Tag("integration")
-@Tag("rest")
-class PostResponseImageControllerTest {
+@ContextConfiguration(classes = TestConfig.class)
+class PostImageControllerTest {
+
+    private MockMvc mockMvc;
 
     @Autowired
     private PostImageController postImageController;
-
-    private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
