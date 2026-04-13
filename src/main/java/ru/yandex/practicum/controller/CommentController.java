@@ -10,19 +10,19 @@ import ru.yandex.practicum.service.CommentService;
 import java.util.List;
 
 @RestController
-@RequestMapping({"/api/posts/{postId}/comments", "/api/posts/undefined/comments"})
+@RequestMapping("/api/posts/{postId}/comments")
 @AllArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
     @GetMapping
-    public List<Comment> findAllByPostId(@PathVariable(value = "postId", required = false) Long postId) {
+    public List<Comment> findAllByPostId(@PathVariable("postId") Long postId) {
         return commentService.findAllByPostId(postId);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getById(@PathVariable(value = "postId", required = false) Long postId, @PathVariable("id") Long id) {
+    public ResponseEntity<Comment> getById(@PathVariable("postId") Long postId, @PathVariable("id") Long id) {
         return commentService
                 .getById(postId, id)
                 .map(ResponseEntity::ok)
@@ -30,7 +30,7 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResponseEntity<Comment> saveComment(@PathVariable(value = "postId", required = false) Long postId,
+    public ResponseEntity<Comment> saveComment(@PathVariable("postId") Long postId,
                                                @RequestBody @Valid Comment comment) {
         return commentService
                 .saveComment(postId, comment)
@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Comment> updateComment(@PathVariable(value = "postId", required = false) Long postId,
+    public ResponseEntity<Comment> updateComment(@PathVariable("postId") Long postId,
                                                  @PathVariable("id") Long id,
                                                  @RequestBody @Valid Comment comment) {
         return commentService
@@ -50,8 +50,8 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteComment(@PathVariable(value = "postId", required = false) Long postId,
-                               @PathVariable("id") Long id){
+    public void deleteComment(@PathVariable("postId") Long postId,
+                              @PathVariable("id") Long id) {
         commentService.deleteComment(postId, id);
     }
 

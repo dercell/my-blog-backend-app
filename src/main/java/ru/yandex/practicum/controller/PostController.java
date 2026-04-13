@@ -6,11 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.PostCreateRequest;
+import ru.yandex.practicum.model.PostResponse;
+import ru.yandex.practicum.model.PostUpdateRequest;
 import ru.yandex.practicum.service.PostService;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 @Slf4j
 @RestController
@@ -29,7 +28,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable("id") Long id) {
+    public ResponseEntity<PostResponse> getPostById(@PathVariable("id") Long id) {
         return postService
                 .getPostById(id)
                 .map(ResponseEntity::ok)
@@ -37,23 +36,23 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> savePost(@RequestBody @Valid Post post) throws SQLException {
+    public ResponseEntity<PostResponse> savePost(@RequestBody @Valid PostCreateRequest postCreateRequest) {
         return postService
-                .savePost(post)
+                .savePost(postCreateRequest)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@RequestBody @Valid Post post, @PathVariable("id") Long id) {
+    public ResponseEntity<PostResponse> updatePost(@RequestBody @Valid PostUpdateRequest postUpdateRequest, @PathVariable("id") Long id) {
         return postService
-                .updatePost(post, id)
+                .updatePost(postUpdateRequest, id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public void deletePost(@PathVariable("id") Long id) throws IOException {
+    public void deletePost(@PathVariable("id") Long id) {
         postService.deletePostById(id);
     }
 

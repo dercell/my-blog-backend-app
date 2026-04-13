@@ -15,10 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
-
-    @JsonProperty
-    private Long id;
+public class PostCreateRequest {
 
     @NotBlank(message = "Не может быть пустым")
     @JsonProperty
@@ -33,10 +30,5 @@ public class Post {
     @JsonProperty
     private List<String> tags;
 
-    @JsonProperty
-    private Integer likesCount;
-
-    @JsonProperty
-    private Integer commentsCount;
 
 }

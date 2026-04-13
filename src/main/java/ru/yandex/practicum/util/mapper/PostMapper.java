@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.PostResponse;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -13,8 +13,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostMapper {
 
-    public static RowMapper<Post> postRowMapper() {
-        return (rs, rowNum) -> Post.builder()
+    public static RowMapper<PostResponse> postRowMapper() {
+        return (rs, rowNum) -> PostResponse.builder()
                 .id(rs.getLong("id"))
                 .title(rs.getString("title"))
                 .text(rs.getString("text"))

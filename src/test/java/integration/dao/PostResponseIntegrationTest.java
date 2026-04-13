@@ -17,11 +17,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.PostCreateRequest;
+import ru.yandex.practicum.model.PostResponse;
+import ru.yandex.practicum.model.PostUpdateRequest;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -32,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration(classes = PostIntegrationConfig.class)
 @Tag("integration")
 @Tag("dao")
-class PostIntegrationTest {
+class PostResponseIntegrationTest {
 
     @Autowired
     private PostService postService;
@@ -70,35 +71,34 @@ class PostIntegrationTest {
 
     @Test
     void getPostById() {
-        Optional<Post> p = postService.getPostById(1L);
-        assertEquals("Первый пост", p.map(Post::getTitle).orElse(null));
+        Optional<PostResponse> p = postService.getPostById(1L);
+        assertEquals("Первый пост", p.map(PostResponse::getTitle).orElse(null));
     }
 
     @Test
-    void savePost() throws SQLException {
-        Post newPost = Post.builder()
-                .id(3L).title("Третий пост").text("Текст третьего")
-                .tags(List.of("tag5", "tag6")).likesCount(0).commentsCount(0).build();
-        Optional<Post> savedPost = postService.savePost(newPost);
+    void savePost() {
+        PostCreateRequest newPostRequest = PostCreateRequest.builder()
+                .title("Третий пост").text("Текст третьего").tags(List.of("tag5", "tag6")).build();
+        Optional<PostResponse> savedPost = postService.savePost(newPostRequest);
 
-        assertEquals(newPost.getTitle(), savedPost.map(Post::getTitle).orElse(null));
+        assertEquals(newPostRequest.getTitle(), savedPost.map(PostResponse::getTitle).orElse(null));
     }
 
     @Test
     void updatePost() {
-        Post p = Post.builder()
+        PostUpdateRequest p = PostUpdateRequest.builder()
                 .id(2L).title("Обновленный пост").text("Текст новый")
-                .tags(List.of("tag5")).likesCount(0).commentsCount(2).build();
-        Optional<Post> updatedPost = postService.updatePost(p, 2L);
+                .tags(List.of("tag5")).build();
+        Optional<PostResponse> updatedPost = postService.updatePost(p, 2L);
 
-        assertEquals(p.getTitle(), updatedPost.map(Post::getTitle).orElse(null));
+        assertEquals(p.getTitle(), updatedPost.map(PostResponse::getTitle).orElse(null));
     }
 
     @Test
-    void deletePostById() throws IOException {
+    void deletePostById() {
         postService.deletePostById(2L);
 
-        Optional<Post> p = postService.getPostById(2L);
+        Optional<PostResponse> p = postService.getPostById(2L);
         assertTrue(p.isEmpty());
 
     }
@@ -111,7 +111,7 @@ class PostIntegrationTest {
 
     @Test
     void uploadPostImage() throws IOException {
-        MultipartFile file = new MockMultipartFile("image.png", "image.png", null, new byte[]{1, 2, 3, 4});
+        MultipartFile file = new MockMultipartFile("image.png", "image.png", "image/png", new byte[]{1, 2, 3, 4});
 
         postService.uploadPostImage(2L, file);
         Resource resource = postService.downloadPostImage(2L);

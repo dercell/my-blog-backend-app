@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.service.PostService;
 
-import java.io.IOException;
 
 @RestController
 @AllArgsConstructor
@@ -18,12 +17,12 @@ public class PostImageController {
     private PostService postService;
 
     @PutMapping
-    public void uploadFile(@PathVariable("id") Long id, @RequestParam("image") MultipartFile file) throws IOException {
+    public void uploadFile(@PathVariable("id") Long id, @RequestParam("image") MultipartFile file) {
         postService.uploadPostImage(id, file);
     }
 
     @GetMapping
-    public ResponseEntity<Resource> downloadFile(@PathVariable("id") Long id) throws IOException {
+    public ResponseEntity<Resource> downloadFile(@PathVariable("id") Long id) {
         Resource postImage = postService.downloadPostImage(id);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(postImage);

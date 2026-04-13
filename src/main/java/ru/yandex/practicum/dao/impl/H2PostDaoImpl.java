@@ -12,10 +12,11 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.PostCreateRequest;
+import ru.yandex.practicum.model.PostResponse;
+import ru.yandex.practicum.model.PostUpdateRequest;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
-import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -52,7 +53,7 @@ public class H2PostDaoImpl implements PostDao {
 
     private static final String INSERT_POST_SQL = """
             insert into my_blog.posts(title, text, tags)
-            values(:title, :text, :tags) 
+            values(:title, :text, :tags)
             """;
 
     private static final String UPDATE_POST_SQL = """
@@ -118,7 +119,7 @@ public class H2PostDaoImpl implements PostDao {
 
         params.addValue("limit", pageSize);
         params.addValue("offset", offset);
-        List<Post> content = total != 0 ? namedParameterJdbcTemplate.query(pageSql,
+        List<PostResponse> content = total != 0 ? namedParameterJdbcTemplate.query(pageSql,
                 params,
                 PostMapper.postRowMapper()) : Collections.emptyList();
 
@@ -128,9 +129,9 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Optional<Post> findById(Long id) {
+    public Optional<PostResponse> findById(Long id) {
         try {
-            Post p = namedParameterJdbcTemplate.queryForObject(GET_POST_BY_ID_SQL,
+            PostResponse p = namedParameterJdbcTemplate.queryForObject(GET_POST_BY_ID_SQL,
                     Map.of("id", id),
                     PostMapper.postRowMapper()
             );
@@ -144,12 +145,12 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Long save(Post post) {
+    public Long save(PostCreateRequest postCreateRequest) {
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("title", post.getTitle())
-                .addValue("text", post.getText())
-                .addValue("tags", post.getTags().toArray(new String[0]));
+                .addValue("title", postCreateRequest.getTitle())
+                .addValue("text", postCreateRequest.getText())
+                .addValue("tags", postCreateRequest.getTags().toArray(new String[0]));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(INSERT_POST_SQL, params, keyHolder);
 
@@ -159,11 +160,11 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void update(Post post, Long id) {
+    public void update(PostUpdateRequest postUpdateRequest, Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("title", post.getTitle())
-                .addValue("text", post.getText())
-                .addValue("tags", post.getTags().toArray(new String[0]))
+                .addValue("title", postUpdateRequest.getTitle())
+                .addValue("text", postUpdateRequest.getText())
+                .addValue("tags", postUpdateRequest.getTags().toArray(new String[0]))
                 .addValue("id", id);
 
         namedParameterJdbcTemplate.update(UPDATE_POST_SQL, params);
@@ -175,8 +176,8 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Integer incrementLike(Long id) {
-        return namedParameterJdbcTemplate.update(UPDATE_INC_LIKE_SQL, Map.of("id", id));
+    public void incrementLike(Long id) {
+        namedParameterJdbcTemplate.update(UPDATE_INC_LIKE_SQL, Map.of("id", id));
     }
 
     @Override

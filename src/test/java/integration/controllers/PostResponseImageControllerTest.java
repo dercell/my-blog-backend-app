@@ -1,44 +1,48 @@
 package integration.controllers;
 
-import config.integration.PostLikesControllerConfig;
+import config.integration.PostImageControllerConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.yandex.practicum.controller.PostLikesController;
+import ru.yandex.practicum.controller.PostImageController;
 
-import static org.hamcrest.Matchers.equalTo;
+
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = PostLikesControllerConfig.class)
+@ContextConfiguration(classes = PostImageControllerConfig.class)
 @Tag("integration")
 @Tag("rest")
-class PostLikesControllerTest {
-
+class PostResponseImageControllerTest {
 
     @Autowired
-    private PostLikesController postLikesController;
+    private PostImageController postImageController;
 
     private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(postLikesController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(postImageController).build();
         namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/data.sql'");
     }
 
@@ -48,12 +52,20 @@ class PostLikesControllerTest {
     }
 
     @Test
-    void likePost() throws Exception {
-        mockMvc.perform(post("/api/posts/{id}/likes", 1L))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(equalTo("6")));
-    }
+    void uploadAndDownloadFile() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("image", "image.png", "image/png", new byte[]{1, 2, 3, 4});
 
+        mockMvc.perform(multipart(HttpMethod.PUT, "/api/posts/{id}/image", 1).file(file))
+                .andExpect(status().isOk());
+
+        MvcResult result = mockMvc.perform(get("/api/posts/{id}/image", 1))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andReturn();
+
+        byte[] returnFile = result.getResponse().getContentAsByteArray();
+        assertArrayEquals(file.getBytes(), returnFile);
+
+    }
 
 }

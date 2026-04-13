@@ -16,7 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.controller.PostController;
-import ru.yandex.practicum.model.Post;
+import ru.yandex.practicum.model.PostResponse;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = PostControllerConfig.class)
 @Tag("integration")
 @Tag("rest")
-class PostControllerTest {
+class PostResponseControllerTest {
 
     @Autowired
     private PostController postController;
@@ -74,28 +74,28 @@ class PostControllerTest {
 
     @Test
     void savePost() throws Exception {
-        Post newPost = Post.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
+        PostResponse newPostResponse = PostResponse.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
         mockMvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(newPost)))
+                        .content(om.writeValueAsString(newPostResponse)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.title").value(newPost.getTitle()));
+                .andExpect(jsonPath("$.title").value(newPostResponse.getTitle()));
     }
 
 
     @Test
     void updatePost() throws Exception {
-        Post updatePost = Post.builder().title("Третий пост").text("Новый текст второго поста").tags(List.of("tag5")).build();
+        PostResponse updatePostResponse = PostResponse.builder().title("Третий пост").text("Новый текст второго поста").tags(List.of("tag5")).build();
         mockMvc.perform(put("/api/posts/{id}", 2)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(om.writeValueAsString(updatePost)))
+                        .content(om.writeValueAsString(updatePostResponse)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isMap())
-                .andExpect(jsonPath("$.title").value(updatePost.getTitle()))
-                .andExpect(jsonPath("$.text").value(updatePost.getText()))
+                .andExpect(jsonPath("$.title").value(updatePostResponse.getTitle()))
+                .andExpect(jsonPath("$.text").value(updatePostResponse.getText()))
                 .andExpect(jsonPath("$.tags").isArray())
                 .andExpect(jsonPath("$.tags.length()").value(1));
     }
