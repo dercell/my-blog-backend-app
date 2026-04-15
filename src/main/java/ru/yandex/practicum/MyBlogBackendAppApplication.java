@@ -1,4 +1,4 @@
-package ru.yandex.practicum.my_blog_backend_app;
+package ru.yandex.practicum;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
