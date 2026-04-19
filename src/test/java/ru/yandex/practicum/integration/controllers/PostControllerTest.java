@@ -1,21 +1,16 @@
-package integration.controllers;
+package ru.yandex.practicum.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.TestConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.yandex.practicum.controller.PostController;
 import ru.yandex.practicum.model.PostRequestDto;
 import ru.yandex.practicum.model.PostResponseDto;
 
@@ -26,15 +21,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Tag("rest")
 @Tag("integration")
-@WebAppConfiguration
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class PostControllerTest {
 
-    private MockMvc mockMvc;
-
     @Autowired
-    private PostController postController;
+    private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -43,7 +35,6 @@ class PostControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
         namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/data.sql'");
     }
 

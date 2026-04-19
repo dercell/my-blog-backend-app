@@ -1,58 +1,55 @@
-package integration.controllers;
-
+package ru.yandex.practicum.unit.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import config.TestConfig;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.controller.CommentController;
 import ru.yandex.practicum.model.Comment;
+import ru.yandex.practicum.service.CommentService;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Tag("rest")
-@Tag("integration")
-@WebAppConfiguration
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
-class CommentControllerTest {
+@Tag("unit")
+@WebMvcTest(CommentController.class)
+class CommentsControllerMockTest {
 
     @Autowired
-    private CommentController commentController;
-
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockitoBean
+    private CommentService commentService;
+
+    @MockitoBean
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final ObjectMapper om = new ObjectMapper();
 
-    @BeforeEach
-    void setUp() {
-
-        mockMvc = MockMvcBuilders.standaloneSetup(commentController).build();
-        namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/data.sql'");
-    }
-
-    @AfterEach
-    void cleanUp() {
-        namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/cleanup.sql'");
-    }
 
     @Test
     void findAllByPostId() throws Exception {
+
+        when(commentService.findAllByPostId(1L)).thenReturn(
+                List.of(Comment.builder().id(1L).text("Первый коммент").postId(1L).build(),
+                        Comment.builder().id(2L).text("Второй коммент").postId(1L).build())
+
+        );
+
         mockMvc.perform(get("/api/posts/{postId}/comments", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -64,6 +61,10 @@ class CommentControllerTest {
 
     @Test
     void getPostById() throws Exception {
+
+        when(commentService.getById(1L, 2L)).thenReturn(
+                Optional.of(Comment.builder().id(2L).text("Согласен!").postId(1L).build()));
+
         mockMvc.perform(get("/api/posts/{postId}/comments/{id}", 1L, 2L))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -74,6 +75,10 @@ class CommentControllerTest {
     @Test
     void saveComment() throws Exception {
         Comment newComment = Comment.builder().text("Новый коммент №3").postId(1L).build();
+        when(commentService.saveComment(1L, newComment))
+                .thenReturn(Optional.of(newComment));
+
+
         mockMvc.perform(post("/api/posts/{postId}/comments", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(newComment)))
@@ -85,6 +90,10 @@ class CommentControllerTest {
     @Test
     void updateComment() throws Exception {
         Comment updatedComment = Comment.builder().id(2L).text("Измененный коммент").postId(1L).build();
+
+        when(commentService.updateComment(1L, 2L, updatedComment))
+                .thenReturn(Optional.of(updatedComment));
+
         mockMvc.perform(put("/api/posts/{postId}/comments/{id}", 1L, 2L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(updatedComment)))

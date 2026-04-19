@@ -1,20 +1,17 @@
-package integration.dao;
+package ru.yandex.practicum.integration.service;
 
-import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.PostResponseDto;
@@ -28,11 +25,10 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Tag("dao")
+@Tag("service")
 @Tag("integration")
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
-class PostResponseDtoIntegrationTest {
+@SpringBootTest
+class PostServiceIntegrationTest {
 
     @Autowired
     private PostService postService;

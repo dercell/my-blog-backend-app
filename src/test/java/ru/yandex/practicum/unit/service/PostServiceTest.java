@@ -1,4 +1,4 @@
-package unit.service;
+package ru.yandex.practicum.unit.service;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import ru.yandex.practicum.dao.PostImageStorage;
 import ru.yandex.practicum.model.PagePostResponse;
 import ru.yandex.practicum.model.PostResponseDto;
 import ru.yandex.practicum.model.PostRequestDto;
-import ru.yandex.practicum.service.CommentService;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
@@ -35,9 +34,6 @@ class PostServiceTest {
 
     @Mock
     private PostDao postDao;
-
-    @Mock
-    private CommentService commentService;
 
     @Mock
     private PostImageStorage postImageStorage;

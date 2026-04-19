@@ -1,15 +1,13 @@
-package integration.dao;
+package ru.yandex.practicum.integration.service;
 
-import config.TestConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import ru.yandex.practicum.model.Comment;
 import ru.yandex.practicum.service.CommentService;
 
@@ -19,11 +17,10 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@Tag("dao")
+@Tag("service")
 @Tag("integration")
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
-class CommentIntegrationTest {
+@SpringBootTest
+class CommentServiceIntegrationTest {
 
     @Autowired
     private CommentService commentService;

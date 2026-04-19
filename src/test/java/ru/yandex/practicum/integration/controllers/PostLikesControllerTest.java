@@ -1,20 +1,15 @@
-package integration.controllers;
+package ru.yandex.practicum.integration.controllers;
 
-import config.TestConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.yandex.practicum.controller.PostLikesController;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -22,23 +17,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Tag("rest")
 @Tag("integration")
-@WebAppConfiguration
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class PostLikesControllerTest {
 
-    private MockMvc mockMvc;
-
     @Autowired
-    private PostLikesController postLikesController;
-
+    private MockMvc mockMvc;
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(postLikesController).build();
         namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/data.sql'");
     }
 
