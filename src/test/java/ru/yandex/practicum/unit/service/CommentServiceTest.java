@@ -16,7 +16,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@Tag("ru/yandex/practicum/my_blog_backend_app/unit")
+@Tag("service")
+@Tag("unit")
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
 

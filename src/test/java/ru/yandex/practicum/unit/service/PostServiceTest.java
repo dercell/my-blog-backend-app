@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
+@Tag("service")
 @Tag("unit")
 @ExtendWith(MockitoExtension.class)
 class PostServiceTest {

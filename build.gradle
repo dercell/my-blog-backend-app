@@ -36,6 +36,18 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+
+test {
+    useJUnitPlatform {
+        def tagsProp = project.findProperty('tags')
+        if (tagsProp) {
+            def param = tagsProp.toString()
+            if (param.startsWith('exclude:')) {
+                println "Excluded tags: ${param.substring(8).split(',')}"
+                excludeTags param.substring(8).split(',')
+            } else {
+                includeTags param.split(',')
+            }
+        }
+    }
 }
