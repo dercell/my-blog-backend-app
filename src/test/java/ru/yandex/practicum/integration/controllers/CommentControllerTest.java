@@ -89,4 +89,14 @@ class CommentControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    void emptyComment() throws Exception {
+        Comment newComment = Comment.builder().text(null).postId(1L).build();
+        mockMvc.perform(post("/api/posts/{postId}/comments", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(newComment)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.text").value("must not be blank"));
+    }
+
 }

@@ -1,6 +1,9 @@
 package ru.yandex.practicum.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.model.PostRequestDto;
 import ru.yandex.practicum.model.PostResponseDto;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +46,15 @@ class PostControllerTest {
     @AfterEach
     void cleanUp() {
         namedParameterJdbcTemplate.getJdbcTemplate().execute("RUNSCRIPT FROM 'classpath:db/cleanup.sql'");
+    }
+
+    static Stream<Arguments> invalidPosts() {
+        return Stream.of(
+                Arguments.of(PostRequestDto.builder().id(1L).title(null).text("text").tags(List.of("t1")).build(), "title", "Не может быть пустым"),
+                Arguments.of(PostRequestDto.builder().id(2L).title("title").text(null).tags(List.of("t1")).build(), "text", "Не может быть пустым"),
+                Arguments.of(PostRequestDto.builder().id(3L).title("title").text("text").tags(null).build(), "tags", "Не может быть пустым"),
+                Arguments.of(PostRequestDto.builder().id(4L).title("title").text("text").tags(new ArrayList<>()).build(), "tags", "Не может быть пустым")
+        );
     }
 
     @Test
@@ -96,6 +110,29 @@ class PostControllerTest {
     void deletePost() throws Exception {
         mockMvc.perform(delete("/api/posts/{id}", 2))
                 .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidPosts")
+    void invalidUpdating(PostRequestDto p, String invalidField, String errorText) throws Exception {
+        System.out.println("PUT -> " + om.writeValueAsString(p));
+        mockMvc.perform(put("/api/posts/{id}", p.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(p)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$." + invalidField).value(errorText));
+    }
+
+    @ParameterizedTest
+    @MethodSource("invalidPosts")
+    void invalidCreatePosts(PostRequestDto p, String invalidField, String errorText) throws Exception {
+        System.out.println("POST -> " + om.writeValueAsString(p));
+        mockMvc.perform(post("/api/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(om.writeValueAsString(p)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$." + invalidField).value(errorText));
+
     }
 
 }

@@ -59,4 +59,13 @@ class PostImageControllerTest {
 
     }
 
+    @Test
+    void uploadInvalidFile() throws Exception {
+        MockMultipartFile file = new MockMultipartFile("image", "notVirus.exe", "application/octet-stream", new byte[]{1, 2, 3, 4});
+
+        mockMvc.perform(multipart(HttpMethod.PUT, "/api/posts/{id}/image", 1).file(file))
+                .andExpect(status().isInternalServerError())
+                .andExpect(content().string("Unsupported file type: application/octet-stream"));
+    }
+
 }
