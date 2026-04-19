@@ -6,9 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
-import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.model.PostRequestDto;
+import ru.yandex.practicum.model.PostResponseDto;
 import ru.yandex.practicum.service.PostService;
 
 @Slf4j
@@ -28,7 +27,7 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPostById(@PathVariable("id") Long id) {
+    public ResponseEntity<PostResponseDto> getPostById(@PathVariable("id") Long id) {
         return postService
                 .getPostById(id)
                 .map(ResponseEntity::ok)
@@ -36,17 +35,17 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostResponse> savePost(@RequestBody @Valid PostCreateRequest postCreateRequest) {
+    public ResponseEntity<PostResponseDto> savePost(@RequestBody @Valid PostRequestDto postRequestDto) {
         return postService
-                .savePost(postCreateRequest)
+                .savePost(postRequestDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostResponse> updatePost(@RequestBody @Valid PostUpdateRequest postUpdateRequest, @PathVariable("id") Long id) {
+    public ResponseEntity<PostResponseDto> updatePost(@RequestBody @Valid PostRequestDto postRequestDto, @PathVariable("id") Long id) {
         return postService
-                .updatePost(postUpdateRequest, id)
+                .updatePost(postRequestDto, id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

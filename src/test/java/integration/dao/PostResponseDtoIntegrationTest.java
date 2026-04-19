@@ -17,9 +17,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
-import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.model.PostResponseDto;
+import ru.yandex.practicum.model.PostRequestDto;
 import ru.yandex.practicum.service.PostService;
 
 import java.io.IOException;
@@ -33,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Tag("integration")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestConfig.class)
-class PostResponseIntegrationTest {
+class PostResponseDtoIntegrationTest {
 
     @Autowired
     private PostService postService;
@@ -71,34 +70,34 @@ class PostResponseIntegrationTest {
 
     @Test
     void getPostById() {
-        Optional<PostResponse> p = postService.getPostById(1L);
-        assertEquals("Первый пост", p.map(PostResponse::getTitle).orElse(null));
+        Optional<PostResponseDto> p = postService.getPostById(1L);
+        assertEquals("Первый пост", p.map(PostResponseDto::getTitle).orElse(null));
     }
 
     @Test
     void savePost() {
-        PostCreateRequest newPostRequest = PostCreateRequest.builder()
+        PostRequestDto newPostRequest = PostRequestDto.builder()
                 .title("Третий пост").text("Текст третьего").tags(List.of("tag5", "tag6")).build();
-        Optional<PostResponse> savedPost = postService.savePost(newPostRequest);
+        Optional<PostResponseDto> savedPost = postService.savePost(newPostRequest);
 
-        assertEquals(newPostRequest.getTitle(), savedPost.map(PostResponse::getTitle).orElse(null));
+        assertEquals(newPostRequest.getTitle(), savedPost.map(PostResponseDto::getTitle).orElse(null));
     }
 
     @Test
     void updatePost() {
-        PostUpdateRequest p = PostUpdateRequest.builder()
+        PostRequestDto p = PostRequestDto.builder()
                 .id(2L).title("Обновленный пост").text("Текст новый")
                 .tags(List.of("tag5")).build();
-        Optional<PostResponse> updatedPost = postService.updatePost(p, 2L);
+        Optional<PostResponseDto> updatedPost = postService.updatePost(p, 2L);
 
-        assertEquals(p.getTitle(), updatedPost.map(PostResponse::getTitle).orElse(null));
+        assertEquals(p.getTitle(), updatedPost.map(PostResponseDto::getTitle).orElse(null));
     }
 
     @Test
     void deletePostById() {
         postService.deletePostById(2L);
 
-        Optional<PostResponse> p = postService.getPostById(2L);
+        Optional<PostResponseDto> p = postService.getPostById(2L);
         assertTrue(p.isEmpty());
 
     }

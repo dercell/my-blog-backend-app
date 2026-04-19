@@ -16,8 +16,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.yandex.practicum.controller.PostController;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
+import ru.yandex.practicum.model.PostRequestDto;
+import ru.yandex.practicum.model.PostResponseDto;
 
 import java.util.List;
 
@@ -75,7 +75,7 @@ class PostControllerTest {
 
     @Test
     void savePost() throws Exception {
-        PostCreateRequest newPost = PostCreateRequest.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
+        PostRequestDto newPost = PostRequestDto.builder().title("Третий пост").text("Текст третьего поста").tags(List.of("tag3", "tag5")).build();
         mockMvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(newPost)))
@@ -88,7 +88,7 @@ class PostControllerTest {
 
     @Test
     void updatePost() throws Exception {
-        PostResponse updatePostResponse = PostResponse.builder().title("Третий пост").text("Новый текст второго поста").tags(List.of("tag5")).build();
+        PostResponseDto updatePostResponse = PostResponseDto.builder().title("Третий пост").text("Новый текст второго поста").tags(List.of("tag5")).build();
         mockMvc.perform(put("/api/posts/{id}", 2)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(om.writeValueAsString(updatePostResponse)))

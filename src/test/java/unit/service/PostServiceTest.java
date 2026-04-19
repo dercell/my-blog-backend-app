@@ -13,9 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.dao.PostImageStorage;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
-import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.model.PostResponseDto;
+import ru.yandex.practicum.model.PostRequestDto;
 import ru.yandex.practicum.service.CommentService;
 import ru.yandex.practicum.service.PostService;
 
@@ -46,9 +45,9 @@ class PostServiceTest {
     @Test
     void getPosts() {
         PagePostResponse ppr = new PagePostResponse(
-                List.of(PostResponse.builder().id(1L).title("Post #1").text("Post text 1").tags(List.of("tag1")).likesCount(0).commentsCount(0).build(),
-                        PostResponse.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(10).commentsCount(5).build(),
-                        PostResponse.builder().id(3L).title("Post #3").text("Post text 3").tags(List.of("tag2", "tag3")).likesCount(123).commentsCount(3).build()),
+                List.of(PostResponseDto.builder().id(1L).title("Post #1").text("Post text 1").tags(List.of("tag1")).likesCount(0).commentsCount(0).build(),
+                        PostResponseDto.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(10).commentsCount(5).build(),
+                        PostResponseDto.builder().id(3L).title("Post #3").text("Post text 3").tags(List.of("tag2", "tag3")).likesCount(123).commentsCount(3).build()),
                 false, false, 1
         );
 
@@ -63,42 +62,42 @@ class PostServiceTest {
 
     @Test
     void getPostById() {
-        PostResponse p = PostResponse.builder().id(1L).title("Post #1").text("Post text 1").tags(List.of("tag1")).likesCount(0).commentsCount(0).build();
+        PostResponseDto p = PostResponseDto.builder().id(1L).title("Post #1").text("Post text 1").tags(List.of("tag1")).likesCount(0).commentsCount(0).build();
         when(postDao.findById(1L)).thenReturn(Optional.of(p));
-        Optional<PostResponse> result = postService.getPostById(1L);
+        Optional<PostResponseDto> result = postService.getPostById(1L);
 
-        assertEquals("Post #1", result.map(PostResponse::getTitle).orElse(""));
+        assertEquals("Post #1", result.map(PostResponseDto::getTitle).orElse(""));
 
     }
 
     @Test
     void savePost() {
-        PostCreateRequest p = PostCreateRequest.builder()
+        PostRequestDto p = PostRequestDto.builder()
                 .title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).build();
 
-        PostResponse response = PostResponse.builder()
+        PostResponseDto response = PostResponseDto.builder()
                 .title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).build();
 
         when(postDao.save(p)).thenReturn(2L);
         when(postDao.findById(2L)).thenReturn(Optional.ofNullable(response));
-        Optional<PostResponse> result = postService.savePost(p);
+        Optional<PostResponseDto> result = postService.savePost(p);
 
-        assertEquals(p.getTitle(), result.map(PostResponse::getTitle).orElse(""));
+        assertEquals(p.getTitle(), result.map(PostResponseDto::getTitle).orElse(""));
 
     }
 
     @Test
     void updatePost() {
-        PostUpdateRequest p = PostUpdateRequest.builder()
+        PostRequestDto p = PostRequestDto.builder()
                 .id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).build();
 
-        PostResponse response = PostResponse.builder()
+        PostResponseDto response = PostResponseDto.builder()
                 .id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).build();
 
         when(postDao.findById(p.getId())).thenReturn(Optional.of(response));
-        Optional<PostResponse> result = postService.updatePost(p, p.getId());
+        Optional<PostResponseDto> result = postService.updatePost(p, p.getId());
 
-        assertEquals(p.getTitle(), result.map(PostResponse::getTitle).orElse(""));
+        assertEquals(p.getTitle(), result.map(PostResponseDto::getTitle).orElse(""));
         verify(postDao, times(1)).update(p, p.getId());
     }
 
@@ -114,7 +113,7 @@ class PostServiceTest {
 
     @Test
     void likePost() {
-        PostResponse p = PostResponse.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(1).commentsCount(5).build();
+        PostResponseDto p = PostResponseDto.builder().id(2L).title("Post #2").text("Post text 2").tags(List.of("tag1", "tag2")).likesCount(1).commentsCount(5).build();
         when(postDao.findById(2L)).thenReturn(Optional.of(p));
 
         Integer result = postService.likePost(2L);

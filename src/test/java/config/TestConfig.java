@@ -60,7 +60,7 @@ public class TestConfig {
 
     @Bean
     public PostService postService() {
-        return new PostService(postDao(), postImageStorage(), commentService());
+        return new PostService(postDao(), postImageStorage());
     }
 
     @Bean

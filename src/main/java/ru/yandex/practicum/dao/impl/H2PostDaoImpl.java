@@ -12,9 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.dao.PostDao;
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
-import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.model.PostResponseDto;
+import ru.yandex.practicum.model.PostRequestDto;
 import ru.yandex.practicum.util.mapper.PostMapper;
 
 import java.text.MessageFormat;
@@ -119,7 +118,7 @@ public class H2PostDaoImpl implements PostDao {
 
         params.addValue("limit", pageSize);
         params.addValue("offset", offset);
-        List<PostResponse> content = total != 0 ? namedParameterJdbcTemplate.query(pageSql,
+        List<PostResponseDto> content = total != 0 ? namedParameterJdbcTemplate.query(pageSql,
                 params,
                 PostMapper.postRowMapper()) : Collections.emptyList();
 
@@ -129,9 +128,9 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Optional<PostResponse> findById(Long id) {
+    public Optional<PostResponseDto> findById(Long id) {
         try {
-            PostResponse p = namedParameterJdbcTemplate.queryForObject(GET_POST_BY_ID_SQL,
+            PostResponseDto p = namedParameterJdbcTemplate.queryForObject(GET_POST_BY_ID_SQL,
                     Map.of("id", id),
                     PostMapper.postRowMapper()
             );
@@ -145,12 +144,12 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Long save(PostCreateRequest postCreateRequest) {
+    public Long save(PostRequestDto postRequestDto) {
 
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("title", postCreateRequest.getTitle())
-                .addValue("text", postCreateRequest.getText())
-                .addValue("tags", postCreateRequest.getTags().toArray(new String[0]));
+                .addValue("title", postRequestDto.getTitle())
+                .addValue("text", postRequestDto.getText())
+                .addValue("tags", postRequestDto.getTags().toArray(new String[0]));
         KeyHolder keyHolder = new GeneratedKeyHolder();
         namedParameterJdbcTemplate.update(INSERT_POST_SQL, params, keyHolder);
 
@@ -160,11 +159,11 @@ public class H2PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void update(PostUpdateRequest postUpdateRequest, Long id) {
+    public void update(PostRequestDto postRequestDto, Long id) {
         SqlParameterSource params = new MapSqlParameterSource()
-                .addValue("title", postUpdateRequest.getTitle())
-                .addValue("text", postUpdateRequest.getText())
-                .addValue("tags", postUpdateRequest.getTags().toArray(new String[0]))
+                .addValue("title", postRequestDto.getTitle())
+                .addValue("text", postRequestDto.getText())
+                .addValue("tags", postRequestDto.getTags().toArray(new String[0]))
                 .addValue("id", id);
 
         namedParameterJdbcTemplate.update(UPDATE_POST_SQL, params);

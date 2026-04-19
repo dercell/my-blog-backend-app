@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostUpdateRequest {
+public class PostRequestDto {
 
     @JsonProperty
     private Long id;
