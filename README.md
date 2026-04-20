@@ -6,21 +6,26 @@
 
 ```bash
 #Linux/MacOS
-./mvnw clean package
+./gradlew clean bootJar 
 
 #Windows
-mvnw.cmd clean package
+gradlew.bat clean bootJar
 ```
 
-Далее в корне проекта появится каталог target, внутри него ROOT.war. Проект собран и готов к деплою в сервлет-контейнер.
+Далее в корне проекта появится каталог build, внутри которого в папке libs лежит файл с расширением jar
 
-### Деплой в Tomcat
+### Запуск исполняемого файла проекта
 
-Для развертывания бэкенда необдходим сервлет-контейнер Tomcat выше версии 9. Специфика реализации интерфейса блога
-предполагает обращение к бэкенду по адресу `http://localhost:8080/`, поэтому архив имеет наименование ROOT.war.
-Необходимо перейти в каталог Tomcat в папку webapps и удалить/изменить наименование каталога ROOT на другое (например
-ROOT_BKP). Далее поместить туда собраный ROOT.war из проекта. Приложение автоматически развёртывается на корневом URL.
-Для обновления бэкенда необходимо пересобрать и также поместить в webapps новый архив, заменив старый.
+Запускаем файл командой из корня проекта
+
+```bash
+#Linux/MacOS
+java -jar ./build/libs/my-blog-backend-app-0.0.1-SNAPSHOT.jar
+
+#Windows
+java -jar build\libs\my-blog-backend-app-0.0.1-SNAPSHOT.jar
+
+```
 
 ### Тестирование
 
@@ -28,27 +33,27 @@ ROOT_BKP). Далее поместить туда собраный ROOT.war из
 
 ```bash
 #Linux/MacOS
-./mvnw clean test
+./gradlew clean test
 
 #Windows
-mvnw.cmd clean test
+./gradlew clean test
 ```
 
 В проекте предусматривается модульное и интеграционное тестирование. Соответствующие тесты помечены тегами `unit` и
-`integration`. Интеграционные соответственно подразделяются на слои `dao` и `rest`. Поэтому для запуска того или иного
-типа можно использовать следующую команды
+`integration`. Интеграционные соответственно подразделяются на слои `service`, `dao` и `rest`. Юнит тесты подразделяются
+на `service` и `rest`. Для запуска нужных типов тестов нужно указать параметр и перечислить нужные теги через запятую.
+А для исключения необходимо также через запятую прописать нужные теги, но указав `exclude:` перед ними.
 
 ```bash
 #Linux/MacOS
-
-./mvnw clean test -Dgroups=unit
-./mvnw clean test -Dgroups=integration 
-./mvnw clean test -Dgroups=dao
-./mvnw clean test -Dgroups=rest
+./gradlew clean test -Ptags=unit
+./gradlew clean test -Ptags=rest,service  
+./gradlew clean test -Ptags=exclude:integration
+./gradlew clean test
 
 #Windows
-mvnw.cmd clean test -Dgroups=unit
-mvnw.cmd clean test -Dgroups=integration 
-mvnw.cmd clean test -Dgroups=dao
-mvnw.cmd clean test -Dgroups=rest
+gradlew.bat clean test -Ptags=unit
+gradlew.bat clean test -Ptags=rest
+gradlew.bat clean test -Ptags=dao
+gradlew.bat clean test -Ptags=exclude:dao,rest
 ```

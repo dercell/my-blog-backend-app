@@ -1,9 +1,8 @@
 package ru.yandex.practicum.dao;
 
 import ru.yandex.practicum.model.PagePostResponse;
-import ru.yandex.practicum.model.PostCreateRequest;
-import ru.yandex.practicum.model.PostResponse;
-import ru.yandex.practicum.model.PostUpdateRequest;
+import ru.yandex.practicum.model.PostResponseDto;
+import ru.yandex.practicum.model.PostRequestDto;
 
 import java.util.Optional;
 
@@ -11,11 +10,11 @@ public interface PostDao {
 
     PagePostResponse findAll(String search, int pageNumber, int pageSize);
 
-    Optional<PostResponse> findById(Long id);
+    Optional<PostResponseDto> findById(Long id);
 
-    Long save(PostCreateRequest postCreateRequest);
+    Long save(PostRequestDto postRequestDto);
 
-    void update(PostUpdateRequest postUpdateResponse, Long id);
+    void update(PostRequestDto postUpdateResponse, Long id);
 
     void delete(Long id);
 
